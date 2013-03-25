@@ -4,6 +4,12 @@ describe Spree::Admin::ActiveSalesController  do
   # stub_authorization!
   before do
     controller.stub :current_user => FactoryGirl.create(:admin_user)
+
+    Spree::Tenant.all.map(&:destroy)
+    @orange_tenant = Spree::Tenant.create!(name: 'orange', shortname: 'orange', domain: 'orange.domain')
+
+    Spree::Tenant.set_current_tenant(@orange_tenant) 
+    request.stub(:domain => 'orange.domain')          
   end
 
   # This should return the minimal set of attributes required to create a valid

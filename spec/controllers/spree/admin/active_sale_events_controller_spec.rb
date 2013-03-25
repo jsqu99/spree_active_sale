@@ -4,6 +4,12 @@ describe Spree::Admin::ActiveSaleEventsController do
   
   before do
     controller.stub :current_user => FactoryGirl.create(:admin_user)
+    Spree::Tenant.all.map(&:destroy)
+    @orange_tenant = Spree::Tenant.create!(name: 'orange', shortname: 'orange', domain: 'orange.domain')
+
+    @active_sale = Spree::ActiveSale.create! active_sale_valid_attributes
+    Spree::Tenant.set_current_tenant(@orange_tenant) 
+    request.stub(:domain => 'orange.domain')          
   end
 
   let(:product) { create(:product) }
@@ -42,10 +48,6 @@ describe Spree::Admin::ActiveSaleEventsController do
   # Spree::ActiveSaleEventsController. Be sure to keep this updated too.
   def valid_session
     { "warden.user.user.key" => session["warden.user.user.key"] }
-  end
-
-  before(:each) do
-    @active_sale = Spree::ActiveSale.create! active_sale_valid_attributes
   end
 
   describe "GET index" do

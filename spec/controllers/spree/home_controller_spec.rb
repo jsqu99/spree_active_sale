@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Spree::HomeController do
+  before do
+    Spree::Tenant.all.map(&:destroy)
+    @orange_tenant = Spree::Tenant.create!(name: 'orange', shortname: 'orange', domain: 'orange.domain')
+  end
 
   let(:product) { create(:product) }
 
@@ -42,6 +46,9 @@ describe Spree::HomeController do
 
   describe "GET index" do
     it "assigns all active_sale_event_events as @active_sale_event_events" do
+      Spree::Tenant.set_current_tenant(@orange_tenant) 
+      request.stub(:domain => 'orange.domain')          
+
       spree_get :index, {}, valid_session
       @active_sale.active_sale_events.each{ |event| event.live_and_active?.should be_true }
       assigns(:sale_events).should eq(Spree::ActiveSaleEvent.live_active.to_a)
