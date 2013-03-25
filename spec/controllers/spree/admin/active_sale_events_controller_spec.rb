@@ -1,15 +1,19 @@
 require 'spec_helper'
 
 describe Spree::Admin::ActiveSaleEventsController do
+  let(:ability_user) { stub_model(Spree::LegacyUser) }
   
   before do
-    controller.stub :current_user => FactoryGirl.create(:admin_user)
+    controller.stub(:authorize! => true)
+    controller.stub(:try_spree_current_user => ability_user)
+
+    # controller.stub :current_user => FactoryGirl.create(:admin_user)
     Spree::Tenant.all.map(&:destroy)
     @orange_tenant = Spree::Tenant.create!(name: 'orange', shortname: 'orange', domain: 'orange.domain')
 
     @active_sale = Spree::ActiveSale.create! active_sale_valid_attributes
     Spree::Tenant.set_current_tenant(@orange_tenant) 
-    request.stub(:domain => 'orange.domain')          
+    @request.host = 'orange.domain'
   end
 
   let(:product) { create(:product) }
@@ -53,6 +57,7 @@ describe Spree::Admin::ActiveSaleEventsController do
   describe "GET index" do
     it "assigns all active_sale_event_events as @active_sale_event_events" do
       active_sale_event = @active_sale.active_sale_events.create! valid_attributes
+
       spree_get :index, {:active_sale_id => @active_sale.id}, valid_session
       assigns(:active_sale_events).should eq([active_sale_event])
     end

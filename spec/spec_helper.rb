@@ -19,6 +19,7 @@ Dir[File.join(File.dirname(__FILE__), 'factories/**/*.rb')].each { |f| require f
 require 'spree/core/testing_support/factories'
 require 'spree/core/testing_support/controller_requests'
 require 'spree/core/testing_support/authorization_helpers'
+
 require 'spree/core/url_helpers'
 
 RSpec.configure do |config|
@@ -48,6 +49,7 @@ RSpec.configure do |config|
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   config.use_transactional_fixtures = true
+
 end
 
 RSpec::Matchers.define :have_valid_factory do |factory_name|

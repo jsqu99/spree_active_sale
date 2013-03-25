@@ -1,15 +1,18 @@
 require 'spec_helper'
 
 describe Spree::Admin::ActiveSalesController  do
-  # stub_authorization!
+  let(:ability_user) { stub_model(Spree::LegacyUser) }
+
   before do
-    controller.stub :current_user => FactoryGirl.create(:admin_user)
+    # controller.stub :current_user => FactoryGirl.create(:admin_user)
+    controller.stub(:authorize! => true)
+    controller.stub(:try_spree_current_user => ability_user)
 
     Spree::Tenant.all.map(&:destroy)
     @orange_tenant = Spree::Tenant.create!(name: 'orange', shortname: 'orange', domain: 'orange.domain')
 
     Spree::Tenant.set_current_tenant(@orange_tenant) 
-    request.stub(:domain => 'orange.domain')          
+    @request.host = 'orange.domain'
   end
 
   # This should return the minimal set of attributes required to create a valid

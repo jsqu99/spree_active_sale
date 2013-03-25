@@ -1,7 +1,12 @@
 require 'spec_helper'
 
 describe Spree::HomeController do
+  let(:ability_user) { stub_model(Spree::LegacyUser) }
+
   before do
+    controller.stub(:authorize! => true)
+    controller.stub(:try_spree_current_user => ability_user)
+
     Spree::Tenant.all.map(&:destroy)
     @orange_tenant = Spree::Tenant.create!(name: 'orange', shortname: 'orange', domain: 'orange.domain')
   end
